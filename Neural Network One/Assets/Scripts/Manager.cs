@@ -7,17 +7,17 @@ public class Manager : MonoBehaviour {
     public GameObject target;
 
     private bool isTraining = false;
-    private int[] layers = new int[] { 1, 10, 10, 10, 1 };
+    private int[] layers = new int[] { 1, 10, 10, 1 };
     private List<NeuralNetwork> networks;
     private List<Bot> botList = null;
 
     [Header("Genetic Settings")]
-    public int populationSize = 2;
+    public int populationSize = 50;
     public int generationNumber = 0;
-    public int numberOfSelectedWinners = 10;
+   // public int numberOfSelectedWinners = 25;
 
     [Header("Run Settings")]
-    public float simSpeed = 2;
+    public float simSpeed = 1;
     public float GenTime = 15;
 
     [Header("Spawn Settings")]
@@ -46,17 +46,12 @@ public class Manager : MonoBehaviour {
             {
                 networks.Sort();
 
-                for(int i = 0; i < populationSize; i++)
+                for(int i = 0; i < populationSize / 2; i++)
                 {
-                    if(i < numberOfSelectedWinners)
-                    {
-                        // these are the winners
-                    }else
-                    {
-                        // losers get replaced with a random network that succeeded
-                        networks[i] = new NeuralNetwork(networks[Random.Range(0, numberOfSelectedWinners)]);
-                        networks[i].Mutate();                        
-                    }
+                    networks[i] = new NeuralNetwork(networks[i+(populationSize / 2)]);
+                    networks[i].Mutate();               
+                    
+                    networks[i+(populationSize / 2)] = new NeuralNetwork(networks[i + (populationSize / 2)]);
                 }
 
                 for(int i = 0; i < populationSize; i++)
@@ -85,7 +80,6 @@ public class Manager : MonoBehaviour {
         for(int i = 0; i < populationSize; i++)
         {
             float SpawnAngle = Random.Range(0, 2f * Mathf.PI);
-            //Bot bot = ((GameObject)Instantiate(botPrefab, new Vector3(UnityEngine.Random.Range(1f, 50f), 0.5f, UnityEngine.Random.Range(1f, 99f)), botPrefab.transform.rotation)).GetComponent<Bot>();
             Bot bot = ((GameObject)Instantiate(botPrefab, CircleCenter + new Vector3(CircleRadius * Mathf.Cos(SpawnAngle), 0.5f, CircleRadius * Mathf.Sin(SpawnAngle)), botPrefab.transform.rotation)).GetComponent<Bot>();
             bot.Init(networks[i], target.transform);
             botList.Add(bot);
@@ -93,12 +87,6 @@ public class Manager : MonoBehaviour {
     }
 
     void InitBotNeuralNetworks() {
-        /*
-        if(populationSize %2 != 0)
-        {
-            populationSize = 20;
-        }
-        */
 
         networks = new List<NeuralNetwork>();
 

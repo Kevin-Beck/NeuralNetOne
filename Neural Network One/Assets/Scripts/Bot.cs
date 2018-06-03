@@ -7,16 +7,18 @@ public class Bot : MonoBehaviour
     private bool initilized = false;
     private Transform target;
 
-    private float distanceToTarget;
+  //  private float distanceToTarget;
 
     private NeuralNetwork net;
-    private CharacterController controller;
-    public float speed = 2;
-    public float RotationalSpeed = 5;
+    //private CharacterController controller;
+    private Rigidbody rb;
+  //  public float speed = 2;
+  //  public float RotationalSpeed = 5;
 
     void Start() {
-        controller = GetComponent<CharacterController>();
-        distanceToTarget = Vector3.Distance(transform.position, target.position);
+        //controller = GetComponent<CharacterController>();
+        rb = GetComponent<Rigidbody>();
+        //distanceToTarget = Vector3.Distance(transform.position, target.position);
     }
 
     void FixedUpdate() {
@@ -24,10 +26,10 @@ public class Bot : MonoBehaviour
         {
             // Angle Calculation, input 0
             // distance isnt used for anything currently
-            float distance = Vector3.Distance(transform.position, target.position);
+          //  float distance = Vector3.Distance(transform.position, target.position);
             float[] inputs = new float[1];
             // orig
-            float angle = transform.eulerAngles.y % 360f;
+            float angle = transform.eulerAngles.y % 360f - 90;
             if (angle < 0f)
             {
                 angle += 360f;
@@ -56,18 +58,21 @@ public class Bot : MonoBehaviour
                 rad = 360 - rad;
                 rad *= -1f;
             }
-            rad -= 180;
             rad *= Mathf.Deg2Rad;
             // END OF INPUT 0
             inputs[0] = rad / (Mathf.PI);       
 
             float[] output = net.FeedForward(inputs);
 
-            controller.SimpleMove(controller.transform.forward * speed);
-            controller.transform.Rotate(0, output[0]*RotationalSpeed, 0);
+            //controller.SimpleMove(controller.transform.forward * speed);
+            //controller.transform.Rotate(0, output[0]*RotationalSpeed, 0);
 
-            net.AddFitness(distanceToTarget-distance);
-            distanceToTarget = distance;
+            rb.velocity = 2.5f * transform.forward;
+            rb.angularVelocity = new Vector3(0f, 500f * output[0], 0f);
+
+            //net.AddFitness(distanceToTarget-distance);
+            //distanceToTarget = distance;
+            net.AddFitness(1f - Mathf.Abs(inputs[0]));
         }
     }
 

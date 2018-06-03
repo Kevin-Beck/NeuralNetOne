@@ -93,7 +93,7 @@ public class NeuralNetwork : IComparable<NeuralNetwork>{
         {
             for (int j = 0; j < neurons[i].Length; j++)
             {
-                float value = 0.25f;
+                float value = 0f;
 
                 for (int k = 0; k < neurons[i-1].Length; k++) // sum of all weights connections of this neuron weights in previous layer
                 {
@@ -116,7 +116,7 @@ public class NeuralNetwork : IComparable<NeuralNetwork>{
                 {
                     float weight = weights[i][j][k]; // that weight value for that connection
                     // mutate
-                    float randomNumber = UnityEngine.Random.Range(0f, 8f);
+                    float randomNumber = UnityEngine.Random.Range(0f, 100f);
 
                     if (randomNumber <= 2f)
                     {
@@ -152,8 +152,12 @@ public class NeuralNetwork : IComparable<NeuralNetwork>{
 
     public int CompareTo(NeuralNetwork other) {
         if (other == null) return 1;
-        if (fitness > other.fitness) return 1;
-        else if (fitness < other.fitness) return -1;
-        else return 0;
+
+        if (fitness > other.fitness)
+            return 1;
+        else if (fitness < other.fitness)
+            return -1;
+        else
+            return 0;
     }
 }
